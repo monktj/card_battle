@@ -241,9 +241,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1104678339}
   - component: {fileID: 1104678342}
-  - component: {fileID: 1104678341}
   - component: {fileID: 1104678340}
   - component: {fileID: 1104678343}
+  - component: {fileID: 1104678341}
   m_Layer: 5
   m_Name: MyGround
   m_TagString: Untagged
@@ -282,7 +282,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1164b7939dbf6354b843784a07194359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoneType: 1
 --- !u!114 &1104678341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,7 +295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9022485, g: 1, b: 0.7882353, a: 0.5019608}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -435,9 +434,9 @@ GameObject:
   - component: {fileID: 1217889143}
   - component: {fileID: 1217889145}
   - component: {fileID: 1217889144}
-  - component: {fileID: 1217889146}
   - component: {fileID: 1217889147}
   - component: {fileID: 1217889148}
+  - component: {fileID: 1217889146}
   m_Layer: 5
   m_Name: Card
   m_TagString: Untagged
@@ -512,7 +511,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24f0e7e93dc6fc0468b8851843634a05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowZoneType: 1
   dampingScale: {x: 1, y: 1, z: 1}
 --- !u!225 &1217889147
 CanvasGroup:
@@ -926,9 +924,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2040190862}
   - component: {fileID: 2040190865}
-  - component: {fileID: 2040190864}
   - component: {fileID: 2040190863}
   - component: {fileID: 2040190866}
+  - component: {fileID: 2040190864}
   m_Layer: 5
   m_Name: EnemyGround
   m_TagString: Untagged
@@ -967,7 +965,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1164b7939dbf6354b843784a07194359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoneType: 2
 --- !u!114 &2040190864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -981,7 +978,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.8178047, b: 0.3537736, a: 0.5019608}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
