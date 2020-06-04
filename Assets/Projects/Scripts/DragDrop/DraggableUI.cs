@@ -22,8 +22,10 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler,IDragHandler,IEndDra
     /// When dragging starts, transform value is saved.
     /// </summary>
     public SavedTransform preTransform = new SavedTransform();
+    [HideInInspector]
+    public IDragListener dragListener;
 
-    private IDragListener dragListener;
+    private List<RaycastResult> dropzoneResults = new List<RaycastResult>();
 
     void Start() {
         isDragging = false;
@@ -55,39 +57,34 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler,IDragHandler,IEndDra
             zone.GetComponent<CanvasGroup>().blocksRaycasts = dragListener.CanDroppable(zone);
         }
 
-        dragListener.OnDragStarted(eventData);
+        dragListener.OnDragStarted(this,eventData);
     }
 
     public void OnDrag(PointerEventData eventData) {
         transform.position = eventData.position;
+        dragListener.OnDragging(this,eventData);
     }
 
     public void OnEndDrag(PointerEventData eventData) {
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventData, results);
-
-        DropZone dropZone = null;
-        if (results.Count>0) {
-            dropZone = results[0].gameObject.GetComponent<DropZone>();
-        }
+        DropZone dropZone = FindDropZone(eventData);
 
         //'Drop Success' or 'Drag Canceled'
-        GetComponent<CanvasGroup>().blocksRaycasts = true;
         if(dropZone != null) {
-            dragListener.OnDroped(eventData, dropZone);
+            dragListener.OnDroped(this,eventData, dropZone);
         } else {
             var dropZones = FindObjectsOfType<DropZone>();
             foreach(var zone in dropZones) {
                 zone.GetComponent<CanvasGroup>().blocksRaycasts = false;
             }
 
-            dragListener.OnDragCanceled(eventData,preTransform);
+            dragListener.OnDragCanceled(this,eventData);
         }
 
+        GetComponent<CanvasGroup>().blocksRaycasts = true;
         isDragging = false;
     }
 
-    public void ResetPosition() {
+    public void ResetPosition(SavedTransform savedTransform) {
         transform.SetParent(preTransform.parent, false);
         transform.SetSiblingIndex(preTransform.siblingIndex);
         transform.position = preTransform.position;
@@ -95,5 +92,26 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler,IDragHandler,IEndDra
         transform.localScale = preTransform.scale;
     }
 
+
+
+    
+    /// <summary>
+    /// If not found, return null.
+    /// </summary>
+    public DropZone FindDropZone(PointerEventData eventData) {
+        dropzoneResults.Clear();
+        EventSystem.current.RaycastAll(eventData, dropzoneResults);
+
+        DropZone dropZone = null;
+        if(dropzoneResults.Count > 0) {
+            foreach(var result in dropzoneResults) {
+                dropZone = result.gameObject.GetComponent<DropZone>();
+                if(dropZone != null) {
+                    break;
+                }
+            }
+        }
+        return dropZone;
+    }
 }
 

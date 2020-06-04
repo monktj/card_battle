@@ -10,7 +10,8 @@ public interface IDragListener
     /// </summary>
     bool CanDroppable(DropZone dropZone);
 
-    void OnDragStarted(PointerEventData eventData);
-    void OnDroped(PointerEventData eventData, DropZone dropZone);
-    void OnDragCanceled(PointerEventData eventData,DraggableUI.SavedTransform preTransform);
+    void OnDragStarted(DraggableUI draggable,PointerEventData eventData);
+    void OnDragging(DraggableUI draggable, PointerEventData eventData);
+    void OnDroped(DraggableUI draggable, PointerEventData eventData, DropZone dropZone);
+    void OnDragCanceled(DraggableUI draggable, PointerEventData eventData);
 }
