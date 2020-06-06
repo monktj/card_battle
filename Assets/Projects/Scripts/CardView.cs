@@ -5,41 +5,33 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CardView : MonoBehaviour, IDragListener {
-    private Color preColor;
+    [SerializeField]
+    public Image iconImage;
 
+    void Start() {
+        Refresh(GameDatabase.instance.cards[0]);
+    }
+    
+
+
+    public void Refresh(Card card) {
+        iconImage.sprite = card.texture;
+    }
+
+
+    #region IDragListener Implementation
     public bool CanDroppable(DropZone dropZone) {
         return dropZone.name.Contains("Ground");
     }
-
-    void Start() {
-        preColor = GetComponent<Image>().color;
-    }
-
-   
-
     public void OnDragStarted(DraggableUI draggable,PointerEventData eventData) {
+        draggable.DetachFromParent();
     }
     public void OnDragging(DraggableUI draggable, PointerEventData eventData) {
-        var dropZone=draggable.FindDropZone(eventData);
-        if (dropZone==null) {
-            GetComponent<Image>().color = preColor;
-            
-        } else {
-            if (dropZone.name=="MyGround") {
-                GetComponent<Image>().color = Color.green;
-            } else if (dropZone.name=="EnemyGround") {
-                GetComponent<Image>().color = Color.red;
-            }
-        }
+        var dropZone=draggable.GetDropZone(eventData);
     }
-    public void OnDragCanceled(DraggableUI draggable, PointerEventData eventData) {
+    public void OnDragEnded(DraggableUI draggable, PointerEventData eventData,bool isSuccess,DropZone dropZoneOrNull) {
+        draggable.ReturnToParent();
         draggable.ResetPosition(draggable.preTransform);
-        GetComponent<Image>().color = preColor;
     }
-
-    public void OnDroped(DraggableUI draggable, PointerEventData eventData, DropZone dropZone) {
-        Debug.Log("DropSuccess " + dropZone.name);
-        draggable.ResetPosition(draggable.preTransform);
-        GetComponent<Image>().color = preColor;
-    }
+    #endregion
 }

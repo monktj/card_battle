@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
+using System.Linq;
 
 
 [RequireComponent(typeof(CanvasGroup),typeof(IDragListener))]
@@ -48,8 +49,7 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler,IDragHandler,IEndDra
         //Drag 
         transform.localScale = Vector3.Scale(transform.localScale,dampingScale);
         GetComponent<CanvasGroup>().blocksRaycasts = false;
-        transform.SetParent(GetComponentInParent<Canvas>().transform, false);
-        transform.SetAsLastSibling();
+        
 
         //DropZones Set Active
         var dropZones=FindObjectsOfType<DropZone>();
@@ -66,39 +66,44 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler,IDragHandler,IEndDra
     }
 
     public void OnEndDrag(PointerEventData eventData) {
-        DropZone dropZone = FindDropZone(eventData);
+        DropZone dropZone = GetDropZone(eventData);
 
-        //'Drop Success' or 'Drag Canceled'
-        if(dropZone != null) {
-            dragListener.OnDroped(this,eventData, dropZone);
-        } else {
-            var dropZones = FindObjectsOfType<DropZone>();
-            foreach(var zone in dropZones) {
-                zone.GetComponent<CanvasGroup>().blocksRaycasts = false;
-            }
-
-            dragListener.OnDragCanceled(this,eventData);
+        var dropZones = FindObjectsOfType<DropZone>().Select(x => x.GetComponent<CanvasGroup>());
+        foreach(var it in dropZones) {
+            it.blocksRaycasts = false;
         }
-
         GetComponent<CanvasGroup>().blocksRaycasts = true;
         isDragging = false;
+
+        bool isSuccess = dropZone != null;
+        dragListener.OnDragEnded(this, eventData, isSuccess,dropZone);
     }
 
+    /// <summary>
+    /// Reset to the time drag started.
+    /// </summary>
     public void ResetPosition(SavedTransform savedTransform) {
-        transform.SetParent(preTransform.parent, false);
-        transform.SetSiblingIndex(preTransform.siblingIndex);
         transform.position = preTransform.position;
         transform.rotation = preTransform.rotation;
         transform.localScale = preTransform.scale;
+    }
+    public void DetachFromParent() {
+        transform.SetParent(GetComponentInParent<Canvas>().transform, false);
+        transform.SetAsLastSibling();
+    }
+    public void ReturnToParent() {
+        transform.SetParent(preTransform.parent, false);
+        transform.SetSiblingIndex(preTransform.siblingIndex);
     }
 
 
 
     
     /// <summary>
+    /// Get current DropZone in drag point.
     /// If not found, return null.
     /// </summary>
-    public DropZone FindDropZone(PointerEventData eventData) {
+    public DropZone GetDropZone(PointerEventData eventData) {
         dropzoneResults.Clear();
         EventSystem.current.RaycastAll(eventData, dropzoneResults);
 
@@ -113,5 +118,7 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler,IDragHandler,IEndDra
         }
         return dropZone;
     }
+
+    
 }
 

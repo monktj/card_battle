@@ -12,6 +12,5 @@ public interface IDragListener
 
     void OnDragStarted(DraggableUI draggable,PointerEventData eventData);
     void OnDragging(DraggableUI draggable, PointerEventData eventData);
-    void OnDroped(DraggableUI draggable, PointerEventData eventData, DropZone dropZone);
-    void OnDragCanceled(DraggableUI draggable, PointerEventData eventData);
+    void OnDragEnded(DraggableUI draggable, PointerEventData eventData,bool isSuccess,DropZone dropZoneOrNull);
 }
