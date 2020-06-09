@@ -5,12 +5,13 @@ using System.Collections;
 //전투 관련 부부만 처리할지 
 //선턴 후턴 
 // 
-
 public class BattleManager : MonoBehaviour
 {
     public Battler player, enemy;
     bool playBattle = true;
     Battler attacker, defenser;
+
+    public float BattleSpeed =1; 
 
     // Use this for initialization
     void Start()
@@ -18,18 +19,20 @@ public class BattleManager : MonoBehaviour
         attacker = player;
         defenser = enemy;
 
+        attacker.BattleReady();
+        defenser.BattleReady();
+
     }
 
     // Update is called once per frame
     float Timetick;
     void Update()
     {
-        
         if (playBattle)
         {
             Timetick += Time.deltaTime;
 
-            if (Timetick > 1f)
+            if (Timetick > BattleSpeed)
             {
                 Timetick = 0;
                 playBattle = Battle(attacker, defenser);
@@ -38,14 +41,6 @@ public class BattleManager : MonoBehaviour
                 defenser = temp;
             }            
         }
-        
-
-        //while (playBattle)
-        //{
-            
-
-
-        //}        
     }
     
     private bool Battle(Battler attack,Battler Defense)
@@ -68,21 +63,52 @@ public class BattleManager : MonoBehaviour
     }
 
     //전투
-    private bool Attack(Battler attack,  Battler Defensse)
+    private bool Attack(Battler attack, Battler Defensse)
     {
-        Monster attackMonster = attack.monsterList[attack.battleIndex];
+        Monster attackMonster = attack.GetAttackMonster();
+        Monster defenseMonster = Defensse.GetDefenseMonst();
 
-        //현재는 일단 도발은무시 
-        int DefenseMonsterIndex = Random.Range(0, Defensse.monsterList.Count);
-        //attackMonster
-
-        Monster defenseMonster = Defensse.monsterList[DefenseMonsterIndex];
-
-        attackMonster.hp -= defenseMonster.attack;
-        defenseMonster.hp -= attackMonster.attack;
+        if (attackMonster == null || defenseMonster == null)
+        {
+            Debug.Log("BattleManager Attack Error");
+            return false;
+        }
 
         Debug.Log("전투 : " + attackMonster.ToString() + ":" + defenseMonster.ToString());
 
+        if (attackMonster.divineShieldCount > 0 )
+        {
+            Debug.Log("천상의 보호막 " + attackMonster.ToString());
+            attackMonster.divineShieldCount --;
+        }
+        else
+        {
+            if (defenseMonster.poisonous)
+            {
+                Debug.Log("독성 " + defenseMonster.ToString());
+                attackMonster.hp = 0;
+            }
+                
+            else
+                attackMonster.hp -= defenseMonster.attack;
+        }
+
+        if(defenseMonster.divineShieldCount > 0)
+        {
+            Debug.Log("천상의 보호막 " + defenseMonster.ToString());
+            defenseMonster.divineShieldCount--;
+        }
+        else
+        {
+            if (attackMonster.poisonous)
+            {
+                defenseMonster.hp = 0;
+                Debug.Log("독성 " + attackMonster.ToString());
+            }
+                
+            else
+                defenseMonster.hp -= attackMonster.attack;
+        }
 
         if (attackMonster.hp > 0)
             attackMonster.renewal();
@@ -94,14 +120,7 @@ public class BattleManager : MonoBehaviour
         else
             Defensse.deathMonster(defenseMonster);
 
-        if (attack.battleIndex < attack.monsterList.Count-1)
-            attack.battleIndex++;
-        else
-            attack.battleIndex = 0;
-
-
         return true;
-
     }
 
 

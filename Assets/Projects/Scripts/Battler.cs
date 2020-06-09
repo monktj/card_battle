@@ -32,6 +32,38 @@ public class Battler : MonoBehaviour
     {
         return true;
     }
+    public Monster GetAttackMonster()
+    {
+        if (battleIndex >= monsterList.Count)
+            battleIndex = 0;
+
+        if (monsterList.Count == 0)
+        {
+            Debug.Log("GetAttackMonster == null");
+            return null;
+        }
+
+       return  monsterList[battleIndex++];
+    }
+
+    public Monster GetDefenseMonst()
+    {
+
+        int DefenseMonsterIndex = 0;
+        //현재는 일단 도발은무시 
+        List<Monster> tauntMonsterlist = monsterList.FindAll(x => x.taunt == true);
+
+        if(tauntMonsterlist.Count > 0)
+        {
+            DefenseMonsterIndex = Random.Range(0, tauntMonsterlist.Count);
+
+            return tauntMonsterlist[DefenseMonsterIndex];
+        }
+
+
+        DefenseMonsterIndex = Random.Range(0, monsterList.Count);
+        return monsterList[DefenseMonsterIndex];
+    }
 
     public bool deathMonster(Monster monster)
     {
@@ -42,5 +74,12 @@ public class Battler : MonoBehaviour
         monster.gameObject.SetActive(false);
 
         return true;
+    }
+
+    public void BattleReady()
+    {
+        foreach (var monster in monsterList)
+            monster.BattleSet();
+
     }
 }
